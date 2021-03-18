@@ -1,23 +1,46 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState, useEffect} from 'react'
+import Books from './Books' 
+import axios from 'axios';
+import NewForm from './NewForm';
+
 
 function App() {
+
+  const [books, setBooks]= useState([])
+  const [showForm, setShowForm] = useState(false)
+  
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    try {
+      let resh = await axios.get('https://fakerapi.it/api/v1/books?_quantity=5')
+      setBooks(resh.data.data)
+    }catch(err){
+      console.log('Error, you dickhead!')
+    }
+  }
+
+  const deleteBook = (isbn) => {
+    console.log(books)
+    let filterBooks = books.filter( book => book.isbn !== isbn)
+    setBooks(filterBooks)
+    console.log(filterBooks) 
+  }
+
+  const addBook = (x) => {
+    console.log('added book called')
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Book List</h1>
+      <button onClick={()=> setShowForm(!showForm)}>{showForm ? "hide" : "Show"}</button>
+      {showForm && <NewForm addBook={addBook} />}
+      <Books deleteBook={deleteBook} books={books} />
     </div>
   );
 }
